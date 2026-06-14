@@ -23,7 +23,15 @@ public enum ErrorCode {
 
     // Log
     LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "로그를 찾을 수 없습니다."),
-    LOG_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 로그에 접근 권한이 없습니다.");
+    LOG_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 로그에 접근 권한이 없습니다."),
+
+    // Comment
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "댓글을 삭제할 권한이 없습니다."),
+
+    // Like
+    ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요한 로그입니다."),
+    NOT_LIKED(HttpStatus.BAD_REQUEST, "좋아요하지 않은 로그입니다.");
 
     private final HttpStatus status;
     private final String message;
