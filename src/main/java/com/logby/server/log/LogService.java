@@ -79,12 +79,20 @@ public class LogService {
     public Page<LogResponse> getFeed(Long userId, Pageable pageable) {
         List<Visibility> feedVisibilities = List.of(Visibility.PUBLIC, Visibility.FOLLOWERS_ONLY);
         return logRepository.findFeedLogs(userId, feedVisibilities, pageable)
-            .map(LogResponse::from);
+            .map(log -> LogResponse.feed(
+                log,
+                likeRepository.countByLogId(log.getId()),
+                commentRepository.countByLogId(log.getId())
+            ));
     }
 
     public Page<LogResponse> getUserPublicLogs(Long targetUserId, Pageable pageable) {
         return logRepository.findByUserIdAndVisibility(targetUserId, Visibility.PUBLIC, pageable)
-            .map(LogResponse::from);
+            .map(log -> LogResponse.feed(
+                log,
+                likeRepository.countByLogId(log.getId()),
+                commentRepository.countByLogId(log.getId())
+            ));
     }
 
     @Transactional
