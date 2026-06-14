@@ -11,6 +11,10 @@ public interface LogRepository extends JpaRepository<Log, Long> {
 
     List<Log> findByUserIdOrderByCreatedAtDesc(Long userId);
 
+    Page<Log> findByUserIdAndVisibility(Long userId, Visibility visibility, Pageable pageable);
+
+    long countByUserIdAndVisibility(Long userId, Visibility visibility);
+
     @Query(
         value = """
             SELECT l FROM Log l

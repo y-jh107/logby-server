@@ -9,6 +9,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     boolean existsByFollowerIdAndFollowingId(Long followerId, Long followingId);
 
+    long countByFollowingId(Long followingId);  // 나를 팔로우하는 수 (팔로워)
+
+    long countByFollowerId(Long followerId);     // 내가 팔로우하는 수 (팔로잉)
+
     @Modifying
     @Query("DELETE FROM Follow f WHERE f.follower.id = :followerId AND f.following.id = :followingId")
     void deleteByFollowerAndFollowing(@Param("followerId") Long followerId, @Param("followingId") Long followingId);
