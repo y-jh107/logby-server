@@ -8,6 +8,7 @@ import com.logby.server.log.Log;
 import com.logby.server.log.LogRepository;
 import com.logby.server.user.User;
 import com.logby.server.user.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final LogRepository logRepository;
     private final UserRepository userRepository;
+
+    public List<CommentResponse> getComments(Long logId) {
+        return commentRepository.findByLogIdOrderByCreatedAtAsc(logId)
+            .stream()
+            .map(CommentResponse::from)
+            .toList();
+    }
 
     @Transactional
     public CommentResponse create(Long logId, Long userId, CommentRequest request) {

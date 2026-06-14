@@ -16,10 +16,11 @@ public record LogResponse(
     List<ContentResponse> contents,
     long likeCount,
     long commentCount,
+    boolean likedByMe,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {
-    // 목록 조회용 — contents 빈 리스트, 카운트 없음
+    // 내 로그 목록용 — 카운트/좋아요 미포함
     public static LogResponse from(Log log) {
         return new LogResponse(
             log.getId(),
@@ -29,15 +30,15 @@ public record LogResponse(
             log.getBody(),
             log.getVisibility(),
             List.of(),
-            0L,
-            0L,
+            0L, 0L, false,
             log.getCreatedAt(),
             log.getUpdatedAt()
         );
     }
 
-    // 단건 상세 조회용 — contents 포함
-    public static LogResponse of(Log log, List<ContentResponse> contents) {
+    // 단건 상세 조회용 — contents + 좋아요 상태 포함
+    public static LogResponse of(Log log, List<ContentResponse> contents,
+                                 long likeCount, long commentCount, boolean likedByMe) {
         return new LogResponse(
             log.getId(),
             log.getUser().getId(),
@@ -46,14 +47,13 @@ public record LogResponse(
             log.getBody(),
             log.getVisibility(),
             contents,
-            0L,
-            0L,
+            likeCount, commentCount, likedByMe,
             log.getCreatedAt(),
             log.getUpdatedAt()
         );
     }
 
-    // 피드/목록 조회용 — 좋아요·댓글 수 포함
+    // 피드/공개 목록용 — 좋아요·댓글 수 포함, likedByMe=false
     public static LogResponse feed(Log log, long likeCount, long commentCount) {
         return new LogResponse(
             log.getId(),
@@ -63,8 +63,7 @@ public record LogResponse(
             log.getBody(),
             log.getVisibility(),
             List.of(),
-            likeCount,
-            commentCount,
+            likeCount, commentCount, false,
             log.getCreatedAt(),
             log.getUpdatedAt()
         );

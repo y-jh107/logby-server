@@ -74,15 +74,17 @@ public class UserService {
         return MyProfileResponse.from(user);
     }
 
-    public UserProfileResponse getUserProfile(Long targetUserId) {
+    public UserProfileResponse getUserProfile(Long targetUserId, Long currentUserId) {
         User user = userRepository.findById(targetUserId)
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         long followerCount = followRepository.countByFollowingId(targetUserId);
         long followingCount = followRepository.countByFollowerId(targetUserId);
         long publicLogCount = logRepository.countByUserIdAndVisibility(targetUserId, Visibility.PUBLIC);
+        boolean isFollowing = currentUserId != null
+            && followRepository.existsByFollowerIdAndFollowingId(currentUserId, targetUserId);
 
-        return UserProfileResponse.of(user, followerCount, followingCount, publicLogCount);
+        return UserProfileResponse.of(user, followerCount, followingCount, publicLogCount, isFollowing);
     }
 
     public UserResponse getUser(Long userId) {

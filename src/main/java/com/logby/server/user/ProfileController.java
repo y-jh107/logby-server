@@ -42,8 +42,11 @@ public class ProfileController {
     }
 
     @GetMapping("/{userId}")
-    public ApiResponse<UserProfileResponse> getUserProfile(@PathVariable Long userId) {
-        return ApiResponse.ok(userService.getUserProfile(userId));
+    public ApiResponse<UserProfileResponse> getUserProfile(
+        @AuthenticationPrincipal Long currentUserId,
+        @PathVariable Long userId
+    ) {
+        return ApiResponse.ok(userService.getUserProfile(userId, currentUserId));
     }
 
     @GetMapping("/{userId}/logs")

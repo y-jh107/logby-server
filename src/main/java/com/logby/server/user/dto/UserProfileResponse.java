@@ -9,9 +9,11 @@ public record UserProfileResponse(
     String profileImage,
     long followerCount,
     long followingCount,
-    long publicLogCount
+    long publicLogCount,
+    boolean isFollowing
 ) {
-    public static UserProfileResponse of(User user, long followerCount, long followingCount, long publicLogCount) {
+    public static UserProfileResponse of(User user, long followerCount, long followingCount,
+                                         long publicLogCount, boolean isFollowing) {
         return new UserProfileResponse(
             user.getId(),
             user.getNickname(),
@@ -19,7 +21,8 @@ public record UserProfileResponse(
             user.getProfileImage(),
             followerCount,
             followingCount,
-            publicLogCount
+            publicLogCount,
+            isFollowing
         );
     }
 }

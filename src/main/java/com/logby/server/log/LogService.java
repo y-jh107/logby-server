@@ -1,9 +1,12 @@
 package com.logby.server.log;
 
+import com.logby.server.comment.CommentRepository;
 import com.logby.server.common.exception.BusinessException;
 import com.logby.server.common.exception.ErrorCode;
 import com.logby.server.content.ContentRepository;
 import com.logby.server.content.dto.ContentResponse;
+import com.logby.server.follow.FollowRepository;
+import com.logby.server.like.LikeRepository;
 import com.logby.server.log.dto.LogCreateRequest;
 import com.logby.server.log.dto.LogResponse;
 import com.logby.server.user.User;
@@ -23,6 +26,9 @@ public class LogService {
     private final LogRepository logRepository;
     private final UserRepository userRepository;
     private final ContentRepository contentRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
 
     @Transactional
     public LogResponse create(Long userId, LogCreateRequest request) {
@@ -46,21 +52,31 @@ public class LogService {
             .toList();
     }
 
-    // 단건 조회: contents 포함
+    // 단건 상세: 접근 권한 확인 후 counts + likedByMe 포함
     public LogResponse getLog(Long logId, Long userId) {
         Log log = logRepository.findById(logId)
             .orElseThrow(() -> new BusinessException(ErrorCode.LOG_NOT_FOUND));
 
-        if (!log.getUser().getId().equals(userId)) {
-            throw new BusinessException(ErrorCode.LOG_ACCESS_DENIED);
+        boolean isOwner = log.getUser().getId().equals(userId);
+        if (!isOwner) {
+            Visibility vis = log.getVisibility();
+            if (vis == Visibility.PRIVATE) {
+                throw new BusinessException(ErrorCode.LOG_ACCESS_DENIED);
+            }
+            if (vis == Visibility.FOLLOWERS_ONLY) {
+                boolean follows = followRepository.existsByFollowerIdAndFollowingId(userId, log.getUser().getId());
+                if (!follows) throw new BusinessException(ErrorCode.LOG_ACCESS_DENIED);
+            }
         }
 
         List<ContentResponse> contents = contentRepository.findByLogIdOrderBySortOrder(logId)
-            .stream()
-            .map(ContentResponse::from)
-            .toList();
+            .stream().map(ContentResponse::from).toList();
 
-        return LogResponse.of(log, contents);
+        long likeCount = likeRepository.countByLogId(logId);
+        long commentCount = commentRepository.countByLogId(logId);
+        boolean likedByMe = likeRepository.existsByLogIdAndUserId(logId, userId);
+
+        return LogResponse.of(log, contents, likeCount, commentCount, likedByMe);
     }
 
     @Transactional
