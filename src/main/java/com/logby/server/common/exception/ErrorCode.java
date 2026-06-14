@@ -25,6 +25,9 @@ public enum ErrorCode {
     LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "로그를 찾을 수 없습니다."),
     LOG_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 로그에 접근 권한이 없습니다."),
 
+    // Content
+    CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "콘텐츠를 찾을 수 없습니다."),
+
     // Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "댓글을 삭제할 권한이 없습니다."),

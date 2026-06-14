@@ -2,6 +2,8 @@ package com.logby.server.log;
 
 import com.logby.server.common.exception.BusinessException;
 import com.logby.server.common.exception.ErrorCode;
+import com.logby.server.content.ContentRepository;
+import com.logby.server.content.dto.ContentResponse;
 import com.logby.server.log.dto.LogCreateRequest;
 import com.logby.server.log.dto.LogResponse;
 import com.logby.server.user.User;
@@ -20,6 +22,7 @@ public class LogService {
 
     private final LogRepository logRepository;
     private final UserRepository userRepository;
+    private final ContentRepository contentRepository;
 
     @Transactional
     public LogResponse create(Long userId, LogCreateRequest request) {
@@ -43,6 +46,7 @@ public class LogService {
             .toList();
     }
 
+    // 단건 조회: contents 포함
     public LogResponse getLog(Long logId, Long userId) {
         Log log = logRepository.findById(logId)
             .orElseThrow(() -> new BusinessException(ErrorCode.LOG_NOT_FOUND));
@@ -51,7 +55,12 @@ public class LogService {
             throw new BusinessException(ErrorCode.LOG_ACCESS_DENIED);
         }
 
-        return LogResponse.from(log);
+        List<ContentResponse> contents = contentRepository.findByLogIdOrderBySortOrder(logId)
+            .stream()
+            .map(ContentResponse::from)
+            .toList();
+
+        return LogResponse.of(log, contents);
     }
 
     @Transactional
@@ -70,6 +79,11 @@ public class LogService {
     public Page<LogResponse> getFeed(Long userId, Pageable pageable) {
         List<Visibility> feedVisibilities = List.of(Visibility.PUBLIC, Visibility.FOLLOWERS_ONLY);
         return logRepository.findFeedLogs(userId, feedVisibilities, pageable)
+            .map(LogResponse::from);
+    }
+
+    public Page<LogResponse> getUserPublicLogs(Long targetUserId, Pageable pageable) {
+        return logRepository.findByUserIdAndVisibility(targetUserId, Visibility.PUBLIC, pageable)
             .map(LogResponse::from);
     }
 
