@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: logby
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/logby}
+    username: ${DB_USERNAME:logby}
+    password: ${DB_PASSWORD:logby}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+jwt:
+  secret: ${JWT_SECRET:logby-dev-secret-key-must-be-at-least-256-bits-long-for-hmac-sha}
+  expiration: 86400000
+
+server:
+  port: 8080
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/logby
+    username: logby
+    password: logby
