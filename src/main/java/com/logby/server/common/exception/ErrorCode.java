@@ -31,7 +31,10 @@ public enum ErrorCode {
 
     // Like
     ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요한 로그입니다."),
-    NOT_LIKED(HttpStatus.BAD_REQUEST, "좋아요하지 않은 로그입니다.");
+    NOT_LIKED(HttpStatus.BAD_REQUEST, "좋아요하지 않은 로그입니다."),
+
+    // External API
+    EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "외부 API 호출에 실패했습니다.");
 
     private final HttpStatus status;
     private final String message;

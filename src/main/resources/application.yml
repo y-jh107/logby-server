@@ -22,6 +22,12 @@ jwt:
   secret: ${JWT_SECRET:logby-dev-secret-key-must-be-at-least-256-bits-long-for-hmac-sha}
   expiration: 86400000
 
+kakao:
+  api-key: ${9937dc8d1409f881ab185739ad072036}
+
+tmdb:
+  api-key: ${24f5f87a1103ebaf8fb54966b282db22}
+
 server:
   port: 8080
 
